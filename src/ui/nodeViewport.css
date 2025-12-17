@@ -85,44 +85,9 @@
   overflow: hidden;
 }
 
-.minimap-container {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 4px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-}
-
-.minimap-label {
-  font-size: 10px;
-  color: var(--text-secondary, #999);
-  padding: 0 4px;
-  font-weight: bold;
-  font-family: 'Courier New', monospace;
-}
-
-.minimap-canvas {
-  display: block;
-  border: 1px solid var(--border);
-  background: #0a0a0a;
-  cursor: crosshair;
-  user-select: none;
-  border-radius: 2px;
-}
-
 /* Responsive toolbar */
 @media (max-width: 1200px) {
   .viewport-stats {
-    display: none;
-  }
-
-  .minimap-container {
     display: none;
   }
 }

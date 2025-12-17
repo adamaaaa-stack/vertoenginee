@@ -34,6 +34,8 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
       pinId: string
       pinDirection: 'in' | 'out'
     } | null>(null)
+    const [isDragoverActive, setIsDragoverActive] = useState(false)
+    const [dragPreviewPos, setDragPreviewPos] = useState<{ x: number; y: number } | null>(null)
 
     // Expose viewport methods to parent
     React.useImperativeHandle(ref, () => ({
@@ -111,12 +113,16 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
           // Draw connection preview
           drawConnectionPreview()
         }
+        if (isDragoverActive && dragPreviewPos) {
+          // Draw drag preview
+          drawDragPreview()
+        }
         animationId = requestAnimationFrame(render)
       }
 
       animationId = requestAnimationFrame(render)
       return () => cancelAnimationFrame(animationId)
-    }, [graph, connectionStart])
+    }, [graph, connectionStart, isDragoverActive, dragPreviewPos])
 
     const drawConnectionPreview = () => {
       if (!canvasRef.current || !connectionStart || !viewportRef.current) return
@@ -146,6 +152,40 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
       )
       ctx.stroke()
       ctx.setLineDash([])
+    }
+
+    const drawDragPreview = () => {
+      if (!canvasRef.current || !dragPreviewPos || !viewportRef.current) return
+
+      const ctx = canvasRef.current.getContext('2d')
+      if (!ctx) return
+
+      const screen = viewportRef.current.worldToScreen(dragPreviewPos.x, dragPreviewPos.y)
+      const w = 120 * viewportRef.current.getViewport().zoomLevel
+      const h = 60 * viewportRef.current.getViewport().zoomLevel
+
+      // Draw semi-transparent preview box
+      ctx.fillStyle = 'rgba(100, 150, 255, 0.2)'
+      ctx.fillRect(screen.x, screen.y, w, h)
+
+      // Draw border
+      ctx.strokeStyle = 'rgba(100, 150, 255, 0.8)'
+      ctx.lineWidth = 2
+      ctx.setLineDash([5, 5])
+      ctx.strokeRect(screen.x, screen.y, w, h)
+      ctx.setLineDash([])
+
+      // Draw center crosshair
+      ctx.strokeStyle = 'rgba(100, 150, 255, 0.6)'
+      ctx.lineWidth = 1
+      const cx = screen.x + w / 2
+      const cy = screen.y + h / 2
+      ctx.beginPath()
+      ctx.moveTo(cx - 10, cy)
+      ctx.lineTo(cx + 10, cy)
+      ctx.moveTo(cx, cy - 10)
+      ctx.lineTo(cx, cy + 10)
+      ctx.stroke()
     }
 
     const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
@@ -260,10 +300,30 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
     const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
+
+      if (!canvasRef.current || !viewportRef.current) return
+
+      const rect = canvasRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+
+      const worldCoords = viewportRef.current.screenToWorld(x, y)
+      setDragPreviewPos({ x: worldCoords.x - 60, y: worldCoords.y - 30 })
+      setIsDragoverActive(true)
+    }
+
+    const handleDragLeave = (e: React.DragEvent<HTMLCanvasElement>) => {
+      if (e.target === canvasRef.current) {
+        setIsDragoverActive(false)
+        setDragPreviewPos(null)
+      }
     }
 
     const handleDrop = (e: React.DragEvent<HTMLCanvasElement>) => {
       e.preventDefault()
+      setIsDragoverActive(false)
+      setDragPreviewPos(null)
+
       const nodeType = e.dataTransfer.getData('nodeType')
       if (!nodeType) return
 
@@ -299,6 +359,7 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
         onDragOver={handleDragOver}
+        onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onKeyDown={handleKeyDown}
         tabIndex={0}

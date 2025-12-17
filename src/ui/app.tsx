@@ -7,7 +7,6 @@ import Toolbar from './toolbar'
 import NodeViewport from './nodeViewport'
 import NodePalette from './nodePalette'
 import AssetManager from './assetManager'
-import Console from './console'
 import './app.css'
 
 export default function App() {
@@ -182,9 +181,6 @@ export default function App() {
         </div>
         <div className="right-panel">
           <AssetManager project={project} setProject={setProject} />
-        </div>
-        <div className="console-area">
-          <Console messages={consoleMessages} />
         </div>
       </div>
     </div>

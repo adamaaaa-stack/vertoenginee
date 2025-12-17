@@ -9,10 +9,9 @@
 .app-layout {
   display: grid;
   grid-template-columns: 200px 1fr 250px;
-  grid-template-rows: 1fr 150px;
+  grid-template-rows: 1fr;
   grid-template-areas:
-    "left center right"
-    "left console console";
+    "left center right";
   flex: 1;
   gap: 1px;
   background: var(--border);
@@ -40,16 +39,6 @@
   overflow-y: auto;
   overflow-x: hidden;
   border-left: 1px solid var(--border);
-}
-
-.console-area {
-  grid-area: console;
-  background: var(--bg-secondary);
-  overflow-y: auto;
-  overflow-x: auto;
-  border-top: 1px solid var(--border);
-  font-family: 'Courier New', monospace;
-  font-size: 11px;
 }
 
 /* Canvas styling */
