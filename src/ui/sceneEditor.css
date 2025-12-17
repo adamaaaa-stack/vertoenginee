@@ -1,0 +1,83 @@
+.scene-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border);
+  gap: 8px;
+}
+
+.toolbar-title {
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.toolbar-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.zoom-display {
+  font-size: 11px;
+  color: var(--text-secondary);
+  min-width: 50px;
+  text-align: right;
+}
+
+.toolbar-controls button {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.scene-canvas {
+  flex: 1;
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  cursor: default;
+}
+
+.editor-info {
+  padding: 8px 12px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  min-height: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.entity-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.entity-info strong {
+  color: var(--text-primary);
+}
+
+.coordinates {
+  color: var(--text-secondary);
+  font-family: 'Courier New', monospace;
+}
+
+.empty-info {
+  color: var(--text-secondary);
+  font-style: italic;
+}
