@@ -23,10 +23,6 @@ export default function NodePalette({ onAddNode }: NodePaletteProps) {
   const handleNodeDrag = (nodeType: string) => (e: React.DragEvent) => {
     e.dataTransfer.effectAllowed = 'copy'
     e.dataTransfer.setData('nodeType', nodeType)
-    // Set a drag image
-    const dragImage = new Image()
-    dragImage.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="50"%3E%3Crect width="100" height="50" fill="%234a7ba7"/%3E%3Ctext x="50" y="25" text-anchor="middle" dy=".3em" fill="white" font-size="12" font-family="monospace"%3E' + nodeType + '%3C/text%3E%3C/svg%3E'
-    e.dataTransfer.setDragImage(dragImage, 50, 25)
   }
 
   const getCategories = () => {

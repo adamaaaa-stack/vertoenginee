@@ -98,17 +98,30 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
 
     // Initialize canvas and viewport
     useEffect(() => {
-      if (!canvasRef.current || !graph) return
-      viewportRef.current = new GraphViewport(canvasRef.current)
-    }, [graph])
+      if (!canvasRef.current) return
+      if (!viewportRef.current) {
+        viewportRef.current = new GraphViewport(canvasRef.current)
+      }
+    }, [])
 
     // Render loop
     useEffect(() => {
-      if (!viewportRef.current || !graph || !canvasRef.current) return
+      if (!viewportRef.current || !canvasRef.current) return
 
       let animationId: number
       const render = () => {
-        viewportRef.current!.render(graph)
+        // Always render the graph if it exists
+        if (graph) {
+          viewportRef.current!.render(graph)
+        } else {
+          // Clear canvas if no graph
+          const ctx = canvasRef.current!.getContext('2d')
+          if (ctx) {
+            ctx.fillStyle = '#1a1a1a'
+            ctx.fillRect(0, 0, canvasRef.current!.width, canvasRef.current!.height)
+          }
+        }
+
         if (connectionStart) {
           // Draw connection preview
           drawConnectionPreview()
@@ -164,27 +177,34 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
       const w = 120 * viewportRef.current.getViewport().zoomLevel
       const h = 60 * viewportRef.current.getViewport().zoomLevel
 
-      // Draw semi-transparent preview box
-      ctx.fillStyle = 'rgba(100, 150, 255, 0.2)'
+      // Draw semi-transparent background fill
+      ctx.fillStyle = 'rgba(70, 150, 255, 0.3)'
       ctx.fillRect(screen.x, screen.y, w, h)
 
-      // Draw border
-      ctx.strokeStyle = 'rgba(100, 150, 255, 0.8)'
+      // Draw solid border
+      ctx.strokeStyle = 'rgba(100, 200, 255, 1)'
       ctx.lineWidth = 2
-      ctx.setLineDash([5, 5])
       ctx.strokeRect(screen.x, screen.y, w, h)
-      ctx.setLineDash([])
 
-      // Draw center crosshair
-      ctx.strokeStyle = 'rgba(100, 150, 255, 0.6)'
-      ctx.lineWidth = 1
+      // Draw corner markers
+      ctx.fillStyle = 'rgba(100, 200, 255, 0.8)'
+      const cornerSize = 8
+      ctx.fillRect(screen.x, screen.y, cornerSize, cornerSize)
+      ctx.fillRect(screen.x + w - cornerSize, screen.y, cornerSize, cornerSize)
+      ctx.fillRect(screen.x, screen.y + h - cornerSize, cornerSize, cornerSize)
+      ctx.fillRect(screen.x + w - cornerSize, screen.y + h - cornerSize, cornerSize, cornerSize)
+
+      // Draw center plus icon
+      ctx.strokeStyle = 'rgba(150, 220, 255, 1)'
+      ctx.lineWidth = 2
       const cx = screen.x + w / 2
       const cy = screen.y + h / 2
+      const plusSize = 15
       ctx.beginPath()
-      ctx.moveTo(cx - 10, cy)
-      ctx.lineTo(cx + 10, cy)
-      ctx.moveTo(cx, cy - 10)
-      ctx.lineTo(cx, cy + 10)
+      ctx.moveTo(cx - plusSize, cy)
+      ctx.lineTo(cx + plusSize, cy)
+      ctx.moveTo(cx, cy - plusSize)
+      ctx.lineTo(cx, cy + plusSize)
       ctx.stroke()
     }
 
@@ -300,13 +320,17 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
     const handleDragEnter = (e: React.DragEvent<HTMLCanvasElement>) => {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
+      setIsDragoverActive(true)
     }
 
     const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
 
-      if (!canvasRef.current || !viewportRef.current) return
+      if (!canvasRef.current || !viewportRef.current) {
+        setIsDragoverActive(true)
+        return
+      }
 
       const rect = canvasRef.current.getBoundingClientRect()
       const x = e.clientX - rect.left
@@ -318,7 +342,14 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
     }
 
     const handleDragLeave = (e: React.DragEvent<HTMLCanvasElement>) => {
-      if (e.target === canvasRef.current) {
+      // Check if we're leaving the canvas bounds
+      if (!canvasRef.current) return
+      const rect = canvasRef.current.getBoundingClientRect()
+      const x = e.clientX
+      const y = e.clientY
+
+      // If outside canvas bounds, clear the preview
+      if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
         setIsDragoverActive(false)
         setDragPreviewPos(null)
       }
