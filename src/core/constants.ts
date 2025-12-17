@@ -417,6 +417,216 @@ export const NODE_DEFINITIONS: Record<
       { id: 'false_out', name: 'False', type: 'exec', direction: 'out' },
     ],
   },
+
+  // Physics
+  CheckOverlap: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'entity1', name: 'Entity 1', type: 'entityRef', direction: 'in' },
+      { id: 'entity2', name: 'Entity 2', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'overlap', name: 'Overlapping', type: 'boolean', direction: 'out' },
+    ],
+  },
+  Raycast: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'origin', name: 'Origin', type: 'vector2', direction: 'in' },
+      { id: 'direction', name: 'Direction', type: 'vector2', direction: 'in' },
+      { id: 'distance', name: 'Distance', type: 'number', direction: 'in', defaultValue: 100 },
+    ],
+    outputs: [
+      { id: 'hit', name: 'Hit', type: 'boolean', direction: 'out' },
+      { id: 'entity', name: 'Hit Entity', type: 'entityRef', direction: 'out' },
+      { id: 'point', name: 'Hit Point', type: 'vector2', direction: 'out' },
+    ],
+  },
+  SetVelocity: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'velocity', name: 'Velocity', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  ApplyImpulse: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'force', name: 'Force', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Array/Object operations
+  MakeArray: {
+    category: 'Collections',
+    inputs: [
+      { id: 'element_0', name: 'Element 0', type: 'any', direction: 'in' },
+      { id: 'element_1', name: 'Element 1', type: 'any', direction: 'in' },
+      { id: 'element_2', name: 'Element 2', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+  GetArrayElement: {
+    category: 'Collections',
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'index', name: 'Index', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'element', name: 'Element', type: 'any', direction: 'out' },
+    ],
+  },
+  SetArrayElement: {
+    category: 'Collections',
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'index', name: 'Index', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'element', name: 'Element', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'array_out', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+  ArrayLength: {
+    category: 'Collections',
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'length', name: 'Length', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // Entity operations
+  GetComponent: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'component', name: 'Component', type: 'object', direction: 'out' },
+    ],
+    properties: {
+      componentType: { type: 'string', default: 'Transform' },
+    },
+  },
+  SetComponentProperty: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+    properties: {
+      componentType: { type: 'string', default: 'Transform' },
+      propertyName: { type: 'string', default: 'x' },
+    },
+  },
+  FindEntityByTag: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'tag', name: 'Tag', type: 'string', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'out' },
+      { id: 'found', name: 'Found', type: 'boolean', direction: 'out' },
+    ],
+  },
+  SpawnPrefab: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'prefab', name: 'Prefab', type: 'prefabRef', direction: 'in' },
+      { id: 'position', name: 'Position', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'out' },
+    ],
+  },
+
+  // Animation
+  PlayAnimation: {
+    category: 'Animation',
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'animation', name: 'Animation', type: 'assetRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+    properties: {
+      loop: { type: 'boolean', default: true },
+    },
+  },
+  StopAnimation: {
+    category: 'Animation',
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // AI
+  SetBlackboardValue: {
+    category: NODE_CATEGORIES.AI,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+    properties: {
+      key: { type: 'string', default: 'state' },
+    },
+  },
+  GetBlackboardValue: {
+    category: NODE_CATEGORIES.AI,
+    inputs: [
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'out' },
+    ],
+    properties: {
+      key: { type: 'string', default: 'state' },
+    },
+  },
+  StateMachine: {
+    category: NODE_CATEGORIES.AI,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'entity', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'state', name: 'State', type: 'string', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'entered', name: 'State Entered', type: 'exec', direction: 'out' },
+      { id: 'exited', name: 'State Exited', type: 'exec', direction: 'out' },
+    ],
+  },
 };
 
 // Grid and canvas constants

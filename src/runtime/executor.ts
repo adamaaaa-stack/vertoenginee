@@ -206,6 +206,116 @@ export class GraphExecutor {
       const condition = await this.getPinValue(node, 'condition', context, graph) as boolean;
       return condition ? ['true_out'] : ['false_out'];
     });
+
+    // Physics
+    this.registerExecutor('CheckOverlap', async (node, context, graph) => {
+      context.variables.set(`${node.id}_overlap`, false);
+      return ['overlap'];
+    });
+
+    this.registerExecutor('Raycast', async (node, context, graph) => {
+      context.variables.set(`${node.id}_hit`, false);
+      return ['hit'];
+    });
+
+    this.registerExecutor('SetVelocity', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('ApplyImpulse', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    // Collections
+    this.registerExecutor('MakeArray', async (node, context, graph) => {
+      const elements = [];
+      for (let i = 0; i < 3; i++) {
+        const element = await this.getPinValue(node, `element_${i}`, context, graph);
+        if (element !== undefined) {
+          elements.push(element);
+        }
+      }
+      context.variables.set(`${node.id}_array`, elements);
+      return ['array'];
+    });
+
+    this.registerExecutor('GetArrayElement', async (node, context, graph) => {
+      const array = await this.getPinValue(node, 'array', context, graph) as unknown[];
+      const index = await this.getPinValue(node, 'index', context, graph) as number;
+      const element = array && array[Math.floor(index)];
+      context.variables.set(`${node.id}_element`, element);
+      return ['element'];
+    });
+
+    this.registerExecutor('SetArrayElement', async (node, context, graph) => {
+      const array = (await this.getPinValue(node, 'array', context, graph) as unknown[]) || [];
+      const index = await this.getPinValue(node, 'index', context, graph) as number;
+      const element = await this.getPinValue(node, 'element', context, graph);
+      const newArray = [...array];
+      newArray[Math.floor(index)] = element;
+      context.variables.set(`${node.id}_array_out`, newArray);
+      return ['exec_out', 'array_out'];
+    });
+
+    this.registerExecutor('ArrayLength', async (node, context, graph) => {
+      const array = await this.getPinValue(node, 'array', context, graph) as unknown[];
+      context.variables.set(`${node.id}_length`, array ? array.length : 0);
+      return ['length'];
+    });
+
+    // Entity
+    this.registerExecutor('GetComponent', async (node, context, graph) => {
+      context.variables.set(`${node.id}_component`, {});
+      return ['component'];
+    });
+
+    this.registerExecutor('SetComponentProperty', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('FindEntityByTag', async (node, context, graph) => {
+      context.variables.set(`${node.id}_found`, false);
+      return ['found'];
+    });
+
+    this.registerExecutor('SpawnPrefab', async (node, context, graph) => {
+      context.variables.set(`${node.id}_entity`, `spawned_${Math.random()}`);
+      return ['exec_out', 'entity'];
+    });
+
+    // Animation
+    this.registerExecutor('PlayAnimation', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('StopAnimation', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    // AI
+    this.registerExecutor('SetBlackboardValue', async (node, context, graph) => {
+      const key = node.properties['key'] as string;
+      const value = await this.getPinValue(node, 'value', context, graph);
+      context.variables.set(`blackboard_${key}`, value);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('GetBlackboardValue', async (node, context, graph) => {
+      const key = node.properties['key'] as string;
+      const value = context.variables.get(`blackboard_${key}`);
+      context.variables.set(`${node.id}_value`, value);
+      return ['value'];
+    });
+
+    this.registerExecutor('StateMachine', async (node, context, graph) => {
+      const state = await this.getPinValue(node, 'state', context, graph) as string;
+      const currentState = context.variables.get(`state_machine_current`);
+      if (currentState !== state) {
+        context.variables.set(`state_machine_current`, state);
+        return ['entered'];
+      }
+      return ['exec_out'];
+    });
   }
 
   registerExecutor(nodeType: string, executor: NodeExecutor): void {
