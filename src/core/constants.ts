@@ -1568,6 +1568,458 @@ export const NODE_DEFINITIONS: Record<
       { id: 'choice', name: 'Choice', type: 'any', direction: 'out' },
     ],
   },
+
+  // Bitwise operations
+  BitwiseAnd: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  BitwiseOr: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  BitwiseXor: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  BitwiseNot: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // Date/Time nodes
+  GetCurrentTime: {
+    category: NODE_CATEGORIES.TIME,
+    inputs: [],
+    outputs: [
+      { id: 'time', name: 'Time (ms)', type: 'number', direction: 'out' },
+    ],
+  },
+  GetCurrentDate: {
+    category: NODE_CATEGORIES.TIME,
+    inputs: [],
+    outputs: [
+      { id: 'year', name: 'Year', type: 'number', direction: 'out' },
+      { id: 'month', name: 'Month', type: 'number', direction: 'out' },
+      { id: 'day', name: 'Day', type: 'number', direction: 'out' },
+    ],
+  },
+  FormatTime: {
+    category: NODE_CATEGORIES.TIME,
+    inputs: [
+      { id: 'time', name: 'Time (ms)', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'format', name: 'Format', type: 'string', direction: 'in', defaultValue: 'hh:mm:ss' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // JSON operations
+  JSONParse: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'json', name: 'JSON String', type: 'string', direction: 'in', defaultValue: '{}' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', direction: 'out' },
+      { id: 'error', name: 'Error', type: 'string', direction: 'out' },
+    ],
+  },
+  JSONStringify: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'object', name: 'Object', type: 'object', direction: 'in' },
+      { id: 'prettyPrint', name: 'Pretty Print', type: 'boolean', direction: 'in', defaultValue: false },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Array filter/map/reduce operations
+  FilterArray: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'predicate', name: 'Predicate', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'array', direction: 'out' },
+    ],
+  },
+  MapArray: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'mapper', name: 'Mapper', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'array', direction: 'out' },
+    ],
+  },
+  ArrayJoin: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'separator', name: 'Separator', type: 'string', direction: 'in', defaultValue: ',' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Lerp and interpolation nodes
+  LerpNumber: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 't', name: 'T', type: 'number', direction: 'in', defaultValue: 0.5 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  LerpVector: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'a', name: 'A', type: 'vector2', direction: 'in' },
+      { id: 'b', name: 'B', type: 'vector2', direction: 'in' },
+      { id: 't', name: 'T', type: 'number', direction: 'in', defaultValue: 0.5 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'vector2', direction: 'out' },
+    ],
+  },
+
+  // Vector operations (expanded)
+  VectorLength: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'vector', name: 'Vector', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'length', name: 'Length', type: 'number', direction: 'out' },
+    ],
+  },
+  VectorCross: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'a', name: 'A', type: 'vector2', direction: 'in' },
+      { id: 'b', name: 'B', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  VectorAngle: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'a', name: 'A', type: 'vector2', direction: 'in' },
+      { id: 'b', name: 'B', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'angle', name: 'Angle', type: 'number', direction: 'out' },
+    ],
+  },
+  VectorRotate: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'vector', name: 'Vector', type: 'vector2', direction: 'in' },
+      { id: 'angle', name: 'Angle', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'vector2', direction: 'out' },
+    ],
+  },
+  VectorReflect: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'vector', name: 'Vector', type: 'vector2', direction: 'in' },
+      { id: 'normal', name: 'Normal', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'vector2', direction: 'out' },
+    ],
+  },
+
+  // More string operations
+  StringReverse: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  StringToCharArray: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'array', direction: 'out' },
+    ],
+  },
+  StringInterpolate: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'template', name: 'Template', type: 'string', direction: 'in', defaultValue: 'Value: {0}' },
+      { id: 'arg0', name: 'Arg 0', type: 'any', direction: 'in' },
+      { id: 'arg1', name: 'Arg 1', type: 'any', direction: 'in' },
+      { id: 'arg2', name: 'Arg 2', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Rounding and precision nodes
+  Sign: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Truncate: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  ToFixed: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'digits', name: 'Digits', type: 'number', direction: 'in', defaultValue: 2 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Boolean logic nodes
+  LogicalNand: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'boolean', direction: 'in', defaultValue: true },
+      { id: 'b', name: 'B', type: 'boolean', direction: 'in', defaultValue: true },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  LogicalNor: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'boolean', direction: 'in', defaultValue: true },
+      { id: 'b', name: 'B', type: 'boolean', direction: 'in', defaultValue: true },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  LogicalXor: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'boolean', direction: 'in', defaultValue: true },
+      { id: 'b', name: 'B', type: 'boolean', direction: 'in', defaultValue: true },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  LogicalNot: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'boolean', direction: 'in', defaultValue: true },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Game-specific nodes
+  PointDistance: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'p1', name: 'Point 1', type: 'vector2', direction: 'in' },
+      { id: 'p2', name: 'Point 2', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'distance', name: 'Distance', type: 'number', direction: 'out' },
+    ],
+  },
+  IsPointInCircle: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'point', name: 'Point', type: 'vector2', direction: 'in' },
+      { id: 'center', name: 'Center', type: 'vector2', direction: 'in' },
+      { id: 'radius', name: 'Radius', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  IsPointInRect: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'point', name: 'Point', type: 'vector2', direction: 'in' },
+      { id: 'rectMin', name: 'Rect Min', type: 'vector2', direction: 'in' },
+      { id: 'rectMax', name: 'Rect Max', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Color operations (expanded)
+  HSVToRGB: {
+    category: NODE_CATEGORIES.COLOR,
+    inputs: [
+      { id: 'h', name: 'Hue', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 's', name: 'Saturation', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'v', name: 'Value', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'color', name: 'Color', type: 'color', direction: 'out' },
+    ],
+  },
+  RGBToHSV: {
+    category: NODE_CATEGORIES.COLOR,
+    inputs: [
+      { id: 'color', name: 'Color', type: 'color', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'h', name: 'Hue', type: 'number', direction: 'out' },
+      { id: 's', name: 'Saturation', type: 'number', direction: 'out' },
+      { id: 'v', name: 'Value', type: 'number', direction: 'out' },
+    ],
+  },
+  ColorInvert: {
+    category: NODE_CATEGORIES.COLOR,
+    inputs: [
+      { id: 'color', name: 'Color', type: 'color', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'color', direction: 'out' },
+    ],
+  },
+  ColorBrightness: {
+    category: NODE_CATEGORIES.COLOR,
+    inputs: [
+      { id: 'color', name: 'Color', type: 'color', direction: 'in' },
+      { id: 'amount', name: 'Amount', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'color', direction: 'out' },
+    ],
+  },
+
+  // Procedural generation stubs
+  PerlinNoise: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'x', name: 'X', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'y', name: 'Y', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'scale', name: 'Scale', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  SimplexNoise: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'x', name: 'X', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'y', name: 'Y', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'scale', name: 'Scale', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // Type checking nodes
+  GetType: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'type', name: 'Type', type: 'string', direction: 'out' },
+    ],
+  },
+  IsNull: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  IsNaN: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  IsInfinite: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Physics stub nodes
+  ApplyForce: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'force', name: 'Force', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
 };
 
 // Grid and canvas constants
