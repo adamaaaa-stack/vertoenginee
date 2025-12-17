@@ -1,0 +1,11 @@
+.node-editor-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: default;
+}
+
+.node-editor-canvas:active {
+  cursor: grabbing;
+}

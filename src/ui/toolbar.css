@@ -1,0 +1,28 @@
+.toolbar {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 24px;
+  background: var(--border);
+  margin: 0 4px;
+}
+
+.status-indicator {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-left: 12px;
+}
+
+.toolbar button {
+  white-space: nowrap;
+  min-width: 60px;
+}
