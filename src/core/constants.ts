@@ -15,6 +15,18 @@ export const NODE_CATEGORIES = {
   UI: 'UI',
   AI: 'AI',
   LOGIC: 'Logic',
+  STRING: 'String',
+  VECTOR: 'Vector',
+  COLOR: 'Color',
+  TIME: 'Time',
+  AUDIO: 'Audio',
+  PARTICLE: 'Particle',
+  CONVERSION: 'Conversion',
+  DEBUG: 'Debug',
+  COLLECTIONS: 'Collections',
+  DATA: 'Data',
+  TRANSFORM: 'Transform',
+  ANIMATION: 'Animation',
 } as const;
 
 // Node type definitions with their pins
@@ -625,6 +637,935 @@ export const NODE_DEFINITIONS: Record<
       { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
       { id: 'entered', name: 'State Entered', type: 'exec', direction: 'out' },
       { id: 'exited', name: 'State Exited', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // String Operations
+  Concatenate: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'a', name: 'A', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'b', name: 'B', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'c', name: 'C', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  StringLength: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'length', name: 'Length', type: 'number', direction: 'out' },
+    ],
+  },
+  SubString: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'start', name: 'Start', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'length', name: 'Length', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  ToUpperCase: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  ToLowerCase: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  StringReplace: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'find', name: 'Find', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'replace', name: 'Replace', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  StringSplit: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'delimiter', name: 'Delimiter', type: 'string', direction: 'in', defaultValue: ',' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+  StringContains: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'search', name: 'Search', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Contains', type: 'boolean', direction: 'out' },
+    ],
+  },
+  StringIndexOf: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'search', name: 'Search', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Index', type: 'number', direction: 'out' },
+    ],
+  },
+  ParseInt: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '0' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Number', type: 'number', direction: 'out' },
+    ],
+  },
+  ParseFloat: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '0.0' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Number', type: 'number', direction: 'out' },
+    ],
+  },
+  ToString: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'String', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Vector Operations
+  MakeVector2: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'x', name: 'X', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'y', name: 'Y', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'vector', name: 'Vector', type: 'vector2', direction: 'out' },
+    ],
+  },
+  BreakVector2: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'vector', name: 'Vector', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'x', name: 'X', type: 'number', direction: 'out' },
+      { id: 'y', name: 'Y', type: 'number', direction: 'out' },
+    ],
+  },
+  VectorDistance: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'a', name: 'A', type: 'vector2', direction: 'in' },
+      { id: 'b', name: 'B', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'distance', name: 'Distance', type: 'number', direction: 'out' },
+    ],
+  },
+  VectorDot: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'a', name: 'A', type: 'vector2', direction: 'in' },
+      { id: 'b', name: 'B', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Dot', type: 'number', direction: 'out' },
+    ],
+  },
+  VectorNormalize: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'vector', name: 'Vector', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Normalized', type: 'vector2', direction: 'out' },
+    ],
+  },
+  VectorScale: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'vector', name: 'Vector', type: 'vector2', direction: 'in' },
+      { id: 'scale', name: 'Scale', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Scaled', type: 'vector2', direction: 'out' },
+    ],
+  },
+  VectorAdd: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'a', name: 'A', type: 'vector2', direction: 'in' },
+      { id: 'b', name: 'B', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'vector2', direction: 'out' },
+    ],
+  },
+  VectorSubtract: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'a', name: 'A', type: 'vector2', direction: 'in' },
+      { id: 'b', name: 'B', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'vector2', direction: 'out' },
+    ],
+  },
+
+  // Time Operations
+  Timer: {
+    category: NODE_CATEGORIES.TIME,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'duration', name: 'Duration', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'finished', name: 'Finished', type: 'exec', direction: 'out' },
+      { id: 'elapsed', name: 'Elapsed', type: 'number', direction: 'out' },
+    ],
+  },
+  Stopwatch: {
+    category: NODE_CATEGORIES.TIME,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'time', name: 'Time', type: 'number', direction: 'out' },
+    ],
+    properties: {
+      startOnExecution: { type: 'boolean', default: true },
+    },
+  },
+  GetTime: {
+    category: NODE_CATEGORIES.TIME,
+    inputs: [],
+    outputs: [
+      { id: 'time', name: 'Time', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // Audio Operations
+  PlayAudio: {
+    category: NODE_CATEGORIES.AUDIO,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'audio', name: 'Audio', type: 'assetRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+    properties: {
+      volume: { type: 'number', default: 1 },
+      loop: { type: 'boolean', default: false },
+    },
+  },
+  StopAudio: {
+    category: NODE_CATEGORIES.AUDIO,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  SetAudioVolume: {
+    category: NODE_CATEGORIES.AUDIO,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'volume', name: 'Volume', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Particle Operations
+  EmitParticles: {
+    category: NODE_CATEGORIES.PARTICLE,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'position', name: 'Position', type: 'vector2', direction: 'in' },
+      { id: 'count', name: 'Count', type: 'number', direction: 'in', defaultValue: 10 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+    properties: {
+      life: { type: 'number', default: 1 },
+      spread: { type: 'number', default: 45 },
+    },
+  },
+
+  // Color Operations
+  MakeColor: {
+    category: NODE_CATEGORIES.COLOR,
+    inputs: [
+      { id: 'r', name: 'Red', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'g', name: 'Green', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'b', name: 'Blue', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'a', name: 'Alpha', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'color', name: 'Color', type: 'color', direction: 'out' },
+    ],
+  },
+  BreakColor: {
+    category: NODE_CATEGORIES.COLOR,
+    inputs: [
+      { id: 'color', name: 'Color', type: 'color', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'r', name: 'Red', type: 'number', direction: 'out' },
+      { id: 'g', name: 'Green', type: 'number', direction: 'out' },
+      { id: 'b', name: 'Blue', type: 'number', direction: 'out' },
+      { id: 'a', name: 'Alpha', type: 'number', direction: 'out' },
+    ],
+  },
+  LerpColor: {
+    category: NODE_CATEGORIES.COLOR,
+    inputs: [
+      { id: 'a', name: 'From', type: 'color', direction: 'in' },
+      { id: 'b', name: 'To', type: 'color', direction: 'in' },
+      { id: 't', name: 'T', type: 'number', direction: 'in', defaultValue: 0.5 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Color', type: 'color', direction: 'out' },
+    ],
+  },
+
+  // Advanced Math
+  Sin: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'angle', name: 'Angle (Degrees)', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Cos: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'angle', name: 'Angle (Degrees)', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Tan: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'angle', name: 'Angle (Degrees)', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Abs: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Sqrt: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Power: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'base', name: 'Base', type: 'number', direction: 'in', defaultValue: 2 },
+      { id: 'exponent', name: 'Exponent', type: 'number', direction: 'in', defaultValue: 2 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Min: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Min', type: 'number', direction: 'out' },
+    ],
+  },
+  Max: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Max', type: 'number', direction: 'out' },
+    ],
+  },
+  Round: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Floor: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Ceil: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Modulo: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // Advanced Flow
+  While: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'condition', name: 'Condition', type: 'boolean', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'loop', name: 'Loop', type: 'exec', direction: 'out' },
+      { id: 'finished', name: 'Finished', type: 'exec', direction: 'out' },
+    ],
+  },
+  ForLoop: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'start', name: 'Start', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'end', name: 'End', type: 'number', direction: 'in', defaultValue: 10 },
+    ],
+    outputs: [
+      { id: 'loop', name: 'Loop', type: 'exec', direction: 'out' },
+      { id: 'finished', name: 'Finished', type: 'exec', direction: 'out' },
+      { id: 'index', name: 'Index', type: 'number', direction: 'out' },
+    ],
+  },
+  ForEachLoop: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'loop', name: 'Loop', type: 'exec', direction: 'out' },
+      { id: 'finished', name: 'Finished', type: 'exec', direction: 'out' },
+      { id: 'element', name: 'Element', type: 'any', direction: 'out' },
+      { id: 'index', name: 'Index', type: 'number', direction: 'out' },
+    ],
+  },
+  Switch: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'case_0', name: 'Case 0', type: 'exec', direction: 'out' },
+      { id: 'case_1', name: 'Case 1', type: 'exec', direction: 'out' },
+      { id: 'case_2', name: 'Case 2', type: 'exec', direction: 'out' },
+      { id: 'default', name: 'Default', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Data
+  CreateObject: {
+    category: NODE_CATEGORIES.DATA,
+    inputs: [
+      { id: 'key_0', name: 'Key 0', type: 'string', direction: 'in', defaultValue: 'key0' },
+      { id: 'val_0', name: 'Value 0', type: 'any', direction: 'in' },
+      { id: 'key_1', name: 'Key 1', type: 'string', direction: 'in', defaultValue: 'key1' },
+      { id: 'val_1', name: 'Value 1', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'object', name: 'Object', type: 'object', direction: 'out' },
+    ],
+  },
+  GetObjectProperty: {
+    category: NODE_CATEGORIES.DATA,
+    inputs: [
+      { id: 'object', name: 'Object', type: 'object', direction: 'in' },
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'key' },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'out' },
+    ],
+  },
+  SetObjectProperty: {
+    category: NODE_CATEGORIES.DATA,
+    inputs: [
+      { id: 'object', name: 'Object', type: 'object', direction: 'in' },
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'key' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'object_out', name: 'Object', type: 'object', direction: 'out' },
+    ],
+  },
+
+  // Transform nodes
+  Rotate: {
+    category: NODE_CATEGORIES.TRANSFORM,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'angle', name: 'Angle (degrees)', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  Scale: {
+    category: NODE_CATEGORIES.TRANSFORM,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'scaleX', name: 'Scale X', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'scaleY', name: 'Scale Y', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  GetRotation: {
+    category: NODE_CATEGORIES.TRANSFORM,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'rotation', name: 'Rotation', type: 'number', direction: 'out' },
+    ],
+  },
+  GetScale: {
+    category: NODE_CATEGORIES.TRANSFORM,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'scaleX', name: 'Scale X', type: 'number', direction: 'out' },
+      { id: 'scaleY', name: 'Scale Y', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // Array utilities
+  AppendArray: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'array_out', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+  RemoveArrayElement: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'index', name: 'Index', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'array_out', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+  ArrayContains: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'contains', name: 'Contains', type: 'boolean', direction: 'out' },
+    ],
+  },
+  ArrayIndexOf: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'index', name: 'Index', type: 'number', direction: 'out' },
+    ],
+  },
+  SortArray: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'array_out', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+  ReverseArray: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'array_out', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+  SliceArray: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+      { id: 'start', name: 'Start', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'end', name: 'End', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'array_out', name: 'Array', type: 'array', direction: 'out' },
+    ],
+  },
+
+  // More string utilities
+  StringTrim: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  StringPadStart: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'length', name: 'Length', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'fillString', name: 'Fill String', type: 'string', direction: 'in', defaultValue: ' ' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  StringPadEnd: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'length', name: 'Length', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'fillString', name: 'Fill String', type: 'string', direction: 'in', defaultValue: ' ' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  StringRepeat: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'count', name: 'Count', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Comparison nodes (missing comparisons)
+  GreaterOrEqual: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  LessOrEqual: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Animation nodes
+  Tween: {
+    category: NODE_CATEGORIES.ANIMATION,
+    inputs: [
+      { id: 'start', name: 'Start', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'end', name: 'End', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'duration', name: 'Duration', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'out' },
+      { id: 'complete', name: 'Complete', type: 'exec', direction: 'out' },
+    ],
+  },
+  EaseLinear: {
+    category: NODE_CATEGORIES.ANIMATION,
+    inputs: [
+      { id: 'time', name: 'Time', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'start', name: 'Start', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'end', name: 'End', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'duration', name: 'Duration', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'out' },
+    ],
+  },
+  EaseCubicInOut: {
+    category: NODE_CATEGORIES.ANIMATION,
+    inputs: [
+      { id: 'time', name: 'Time', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'start', name: 'Start', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'end', name: 'End', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'duration', name: 'Duration', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // UI nodes
+  ShowUI: {
+    category: NODE_CATEGORIES.UI,
+    inputs: [
+      { id: 'uiId', name: 'UI ID', type: 'string', direction: 'in', defaultValue: 'ui' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  HideUI: {
+    category: NODE_CATEGORIES.UI,
+    inputs: [
+      { id: 'uiId', name: 'UI ID', type: 'string', direction: 'in', defaultValue: 'ui' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  FocusUI: {
+    category: NODE_CATEGORIES.UI,
+    inputs: [
+      { id: 'uiId', name: 'UI ID', type: 'string', direction: 'in', defaultValue: 'ui' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  SetUIText: {
+    category: NODE_CATEGORIES.UI,
+    inputs: [
+      { id: 'uiId', name: 'UI ID', type: 'string', direction: 'in', defaultValue: 'ui' },
+      { id: 'text', name: 'Text', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // State management nodes
+  SaveState: {
+    category: NODE_CATEGORIES.VARIABLES,
+    inputs: [
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'state' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  LoadState: {
+    category: NODE_CATEGORIES.VARIABLES,
+    inputs: [
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'state' },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'out' },
+    ],
+  },
+  ClearState: {
+    category: NODE_CATEGORIES.VARIABLES,
+    inputs: [
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'state' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Networking stubs
+  SendHTTP: {
+    category: NODE_CATEGORIES.ASSETS,
+    inputs: [
+      { id: 'url', name: 'URL', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'method', name: 'Method', type: 'string', direction: 'in', defaultValue: 'GET' },
+      { id: 'body', name: 'Body', type: 'object', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'response', name: 'Response', type: 'object', direction: 'out' },
+      { id: 'error', name: 'Error', type: 'string', direction: 'out' },
+    ],
+  },
+  ReceiveHTTP: {
+    category: NODE_CATEGORIES.ASSETS,
+    inputs: [
+      { id: 'port', name: 'Port', type: 'number', direction: 'in', defaultValue: 8080 },
+    ],
+    outputs: [
+      { id: 'onReceive', name: 'On Receive', type: 'exec', direction: 'out' },
+      { id: 'data', name: 'Data', type: 'object', direction: 'out' },
+    ],
+  },
+
+  // Device and environment nodes
+  GetCanvasSize: {
+    category: NODE_CATEGORIES.ASSETS,
+    inputs: [],
+    outputs: [
+      { id: 'width', name: 'Width', type: 'number', direction: 'out' },
+      { id: 'height', name: 'Height', type: 'number', direction: 'out' },
+    ],
+  },
+  GetDeviceInfo: {
+    category: NODE_CATEGORIES.ASSETS,
+    inputs: [],
+    outputs: [
+      { id: 'platform', name: 'Platform', type: 'string', direction: 'out' },
+      { id: 'userAgent', name: 'User Agent', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Map/Dictionary operations
+  MapCreate: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [],
+    outputs: [
+      { id: 'map', name: 'Map', type: 'object', direction: 'out' },
+    ],
+  },
+  MapGet: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'map', name: 'Map', type: 'object', direction: 'in' },
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'key' },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'out' },
+    ],
+  },
+  MapSet: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'map', name: 'Map', type: 'object', direction: 'in' },
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'key' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'map_out', name: 'Map', type: 'object', direction: 'out' },
+    ],
+  },
+  MapKeys: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'map', name: 'Map', type: 'object', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'keys', name: 'Keys', type: 'array', direction: 'out' },
+    ],
+  },
+  MapValues: {
+    category: NODE_CATEGORIES.COLLECTIONS,
+    inputs: [
+      { id: 'map', name: 'Map', type: 'object', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'values', name: 'Values', type: 'array', direction: 'out' },
+    ],
+  },
+
+  // Random nodes
+  RandomInt: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'min', name: 'Min', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'max', name: 'Max', type: 'number', direction: 'in', defaultValue: 100 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  RandomFloat: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'min', name: 'Min', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'max', name: 'Max', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  RandomChoice: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'array', name: 'Array', type: 'array', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'choice', name: 'Choice', type: 'any', direction: 'out' },
     ],
   },
 };
