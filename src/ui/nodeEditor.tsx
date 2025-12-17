@@ -297,6 +297,11 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
       viewportRef.current.zoom(zoomDelta, e.clientX - rect.left, e.clientY - rect.top)
     }
 
+    const handleDragEnter = (e: React.DragEvent<HTMLCanvasElement>) => {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'copy'
+    }
+
     const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
       e.preventDefault()
       e.dataTransfer.dropEffect = 'copy'
@@ -358,6 +363,7 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
+        onDragEnter={handleDragEnter}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
