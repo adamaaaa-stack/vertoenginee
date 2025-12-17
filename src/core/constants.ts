@@ -2020,6 +2020,692 @@ export const NODE_DEFINITIONS: Record<
       { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
     ],
   },
+
+  // Flow Control (UE-inspired)
+  DoN: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'n', name: 'N', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'reset', name: 'Reset', type: 'exec', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'count', name: 'Count', type: 'number', direction: 'out' },
+    ],
+  },
+  Gate: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'enter', name: 'Enter', type: 'exec', direction: 'in' },
+      { id: 'open', name: 'Open', type: 'exec', direction: 'in' },
+      { id: 'close', name: 'Close', type: 'exec', direction: 'in' },
+      { id: 'toggle', name: 'Toggle', type: 'exec', direction: 'in' },
+      { id: 'startsOpen', name: 'Starts Open', type: 'boolean', direction: 'in', defaultValue: true },
+    ],
+    outputs: [
+      { id: 'exit', name: 'Exit', type: 'exec', direction: 'out' },
+    ],
+  },
+  RetriggerableDelay: {
+    category: NODE_CATEGORIES.TIME,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'reset', name: 'Reset', type: 'exec', direction: 'in' },
+      { id: 'duration', name: 'Duration', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  FlipFlop: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'reset', name: 'Reset', type: 'exec', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'a', name: 'A Out', type: 'exec', direction: 'out' },
+      { id: 'b', name: 'B Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  MultiGate: {
+    category: NODE_CATEGORIES.FLOW,
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'reset', name: 'Reset', type: 'exec', direction: 'in' },
+      { id: 'index', name: 'Index', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'out0', name: 'Out 0', type: 'exec', direction: 'out' },
+      { id: 'out1', name: 'Out 1', type: 'exec', direction: 'out' },
+      { id: 'out2', name: 'Out 2', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Collision/Tracing
+  LineTrace: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'start', name: 'Start', type: 'vector2', direction: 'in' },
+      { id: 'end', name: 'End', type: 'vector2', direction: 'in' },
+      { id: 'traceChannel', name: 'Channel', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'hit', name: 'Hit', type: 'boolean', direction: 'out' },
+      { id: 'hitLocation', name: 'Hit Location', type: 'vector2', direction: 'out' },
+      { id: 'impactNormal', name: 'Impact Normal', type: 'vector2', direction: 'out' },
+      { id: 'hitActor', name: 'Hit Actor', type: 'entityRef', direction: 'out' },
+    ],
+  },
+  MultiLineTrace: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'start', name: 'Start', type: 'vector2', direction: 'in' },
+      { id: 'end', name: 'End', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'hits', name: 'Hits', type: 'array', direction: 'out' },
+    ],
+  },
+  SphereTrace: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'center', name: 'Center', type: 'vector2', direction: 'in' },
+      { id: 'radius', name: 'Radius', type: 'number', direction: 'in', defaultValue: 50 },
+    ],
+    outputs: [
+      { id: 'hit', name: 'Hit', type: 'boolean', direction: 'out' },
+      { id: 'overlappingActors', name: 'Overlapping Actors', type: 'array', direction: 'out' },
+    ],
+  },
+  BoxTrace: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'center', name: 'Center', type: 'vector2', direction: 'in' },
+      { id: 'extent', name: 'Extent', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'hit', name: 'Hit', type: 'boolean', direction: 'out' },
+      { id: 'overlappingActors', name: 'Overlapping Actors', type: 'array', direction: 'out' },
+    ],
+  },
+  GetOverlappingActors: {
+    category: NODE_CATEGORIES.PHYSICS,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'actors', name: 'Overlapping Actors', type: 'array', direction: 'out' },
+    ],
+  },
+
+  // Actor Transforms (UE-inspired)
+  GetActorBounds: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'origin', name: 'Origin', type: 'vector2', direction: 'out' },
+      { id: 'size', name: 'Size', type: 'vector2', direction: 'out' },
+    ],
+  },
+  GetActorLocation: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'location', name: 'Location', type: 'vector2', direction: 'out' },
+    ],
+  },
+  SetActorLocation: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'location', name: 'Location', type: 'vector2', direction: 'in' },
+      { id: 'teleport', name: 'Teleport', type: 'boolean', direction: 'in', defaultValue: false },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  GetActorRotation: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'rotation', name: 'Rotation', type: 'number', direction: 'out' },
+    ],
+  },
+  SetActorRotation: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'rotation', name: 'Rotation', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  GetActorScale: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'scale', name: 'Scale', type: 'vector2', direction: 'out' },
+    ],
+  },
+  SetActorScale: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'scale', name: 'Scale', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Actor/Object Spawning
+  SpawnActor: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'location', name: 'Location', type: 'vector2', direction: 'in' },
+      { id: 'rotation', name: 'Rotation', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'actorClass', name: 'Actor Class', type: 'string', direction: 'in', defaultValue: 'Actor' },
+    ],
+    outputs: [
+      { id: 'spawnedActor', name: 'Spawned Actor', type: 'entityRef', direction: 'out' },
+    ],
+  },
+  DestroyActor: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Actor', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  IsActorValid: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'valid', name: 'Valid', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Damage/Gameplay
+  TakeDamage: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'damage', name: 'Damage', type: 'number', direction: 'in', defaultValue: 10 },
+      { id: 'damageType', name: 'Damage Type', type: 'string', direction: 'in', defaultValue: 'Generic' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'finalDamage', name: 'Final Damage', type: 'number', direction: 'out' },
+    ],
+  },
+  ApplyDamage: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'targetEntity', name: 'Target', type: 'entityRef', direction: 'in' },
+      { id: 'baseDamage', name: 'Base Damage', type: 'number', direction: 'in', defaultValue: 10 },
+      { id: 'instigator', name: 'Instigator', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'damageDealt', name: 'Damage Dealt', type: 'number', direction: 'out' },
+    ],
+  },
+  GetHealth: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'health', name: 'Health', type: 'number', direction: 'out' },
+    ],
+  },
+  SetHealth: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'health', name: 'Health', type: 'number', direction: 'in', defaultValue: 100 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Character/Movement
+  GetCharacterVelocity: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'velocity', name: 'Velocity', type: 'vector2', direction: 'out' },
+    ],
+  },
+  SetCharacterVelocity: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'velocity', name: 'Velocity', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  LaunchCharacter: {
+    category: NODE_CATEGORIES.ENTITY,
+    inputs: [
+      { id: 'entityId', name: 'Entity', type: 'entityRef', direction: 'in' },
+      { id: 'launchVelocity', name: 'Launch Velocity', type: 'vector2', direction: 'in' },
+      { id: 'xyOverride', name: 'XY Override', type: 'boolean', direction: 'in', defaultValue: false },
+      { id: 'zOverride', name: 'Z Override', type: 'boolean', direction: 'in', defaultValue: false },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Input Events (UE-inspired)
+  InputAxis: {
+    category: NODE_CATEGORIES.EVENTS,
+    inputs: [
+      { id: 'axisName', name: 'Axis Name', type: 'string', direction: 'in', defaultValue: 'MoveForward' },
+    ],
+    outputs: [
+      { id: 'axisValue', name: 'Axis Value', type: 'number', direction: 'out' },
+    ],
+  },
+  InputAction: {
+    category: NODE_CATEGORIES.EVENTS,
+    inputs: [
+      { id: 'actionName', name: 'Action Name', type: 'string', direction: 'in', defaultValue: 'Jump' },
+    ],
+    outputs: [
+      { id: 'pressed', name: 'Pressed', type: 'exec', direction: 'out' },
+      { id: 'released', name: 'Released', type: 'exec', direction: 'out' },
+      { id: 'value', name: 'Value', type: 'number', direction: 'out' },
+    ],
+  },
+  InputKey: {
+    category: NODE_CATEGORIES.EVENTS,
+    inputs: [
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'Space' },
+    ],
+    outputs: [
+      { id: 'pressed', name: 'Pressed', type: 'exec', direction: 'out' },
+      { id: 'released', name: 'Released', type: 'exec', direction: 'out' },
+    ],
+  },
+  GetInputAxis: {
+    category: NODE_CATEGORIES.EVENTS,
+    inputs: [
+      { id: 'axisName', name: 'Axis Name', type: 'string', direction: 'in', defaultValue: 'MoveForward' },
+    ],
+    outputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'out' },
+    ],
+  },
+  IsInputKeyDown: {
+    category: NODE_CATEGORIES.EVENTS,
+    inputs: [
+      { id: 'key', name: 'Key', type: 'string', direction: 'in', defaultValue: 'Space' },
+    ],
+    outputs: [
+      { id: 'isDown', name: 'Is Down', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Audio (UE-inspired)
+  PlaySoundAtLocation: {
+    category: NODE_CATEGORIES.AUDIO,
+    inputs: [
+      { id: 'location', name: 'Location', type: 'vector2', direction: 'in' },
+      { id: 'soundAsset', name: 'Sound', type: 'assetRef', direction: 'in' },
+      { id: 'volume', name: 'Volume', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'audioComponent', name: 'Audio Component', type: 'entityRef', direction: 'out' },
+    ],
+  },
+  PlaySoundAttached: {
+    category: NODE_CATEGORIES.AUDIO,
+    inputs: [
+      { id: 'soundAsset', name: 'Sound', type: 'assetRef', direction: 'in' },
+      { id: 'attachToActor', name: 'Attach To Actor', type: 'entityRef', direction: 'in' },
+      { id: 'volume', name: 'Volume', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'audioComponent', name: 'Audio Component', type: 'entityRef', direction: 'out' },
+    ],
+  },
+  StopSound: {
+    category: NODE_CATEGORIES.AUDIO,
+    inputs: [
+      { id: 'audioComponent', name: 'Audio Component', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  IsSoundPlaying: {
+    category: NODE_CATEGORIES.AUDIO,
+    inputs: [
+      { id: 'audioComponent', name: 'Audio Component', type: 'entityRef', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'isPlaying', name: 'Is Playing', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+
+  // Math (Extended)
+  Clamp01: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  Clamp360: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'angle', name: 'Angle', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  MapRangeClamped: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'inMin', name: 'In Min', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'inMax', name: 'In Max', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'outMin', name: 'Out Min', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'outMax', name: 'Out Max', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  MapRangeUnclamped: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'inMin', name: 'In Min', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'inMax', name: 'In Max', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'outMin', name: 'Out Min', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'outMax', name: 'Out Max', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  FInterpTo: {
+    category: NODE_CATEGORIES.MATH,
+    inputs: [
+      { id: 'current', name: 'Current', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'target', name: 'Target', type: 'number', direction: 'in', defaultValue: 1 },
+      { id: 'deltaTime', name: 'Delta Time', type: 'number', direction: 'in', defaultValue: 0.016 },
+      { id: 'interpSpeed', name: 'Interp Speed', type: 'number', direction: 'in', defaultValue: 5 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  VInterpTo: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'current', name: 'Current', type: 'vector2', direction: 'in' },
+      { id: 'target', name: 'Target', type: 'vector2', direction: 'in' },
+      { id: 'deltaTime', name: 'Delta Time', type: 'number', direction: 'in', defaultValue: 0.016 },
+      { id: 'interpSpeed', name: 'Interp Speed', type: 'number', direction: 'in', defaultValue: 5 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'vector2', direction: 'out' },
+    ],
+  },
+
+  // String (Extended)
+  StartsWithStr: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'prefix', name: 'Prefix', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  EndsWithStr: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'suffix', name: 'Suffix', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  RemoveFromString: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'toRemove', name: 'To Remove', type: 'string', direction: 'in', defaultValue: '' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  RemoveFromStart: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'count', name: 'Count', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  RemoveFromEnd: {
+    category: NODE_CATEGORIES.STRING,
+    inputs: [
+      { id: 'string', name: 'String', type: 'string', direction: 'in', defaultValue: '' },
+      { id: 'count', name: 'Count', type: 'number', direction: 'in', defaultValue: 1 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+
+  // Casting/Conversion
+  CastToInt: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  CastToFloat: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'number', direction: 'out' },
+    ],
+  },
+  CastToString: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'string', direction: 'out' },
+    ],
+  },
+  CastToBool: {
+    category: NODE_CATEGORIES.CONVERSION,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  IsValid: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'valid', name: 'Valid', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Data Structure Operations
+  MakeVector3: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'x', name: 'X', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'y', name: 'Y', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'z', name: 'Z', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'vector3', direction: 'out' },
+    ],
+  },
+  BreakVector3: {
+    category: NODE_CATEGORIES.VECTOR,
+    inputs: [
+      { id: 'vector', name: 'Vector', type: 'vector3', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'x', name: 'X', type: 'number', direction: 'out' },
+      { id: 'y', name: 'Y', type: 'number', direction: 'out' },
+      { id: 'z', name: 'Z', type: 'number', direction: 'out' },
+    ],
+  },
+  MakeRotator: {
+    category: NODE_CATEGORIES.TRANSFORM,
+    inputs: [
+      { id: 'pitch', name: 'Pitch', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'yaw', name: 'Yaw', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'roll', name: 'Roll', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'object', direction: 'out' },
+    ],
+  },
+  BreakRotator: {
+    category: NODE_CATEGORIES.TRANSFORM,
+    inputs: [
+      { id: 'rotator', name: 'Rotator', type: 'object', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'pitch', name: 'Pitch', type: 'number', direction: 'out' },
+      { id: 'yaw', name: 'Yaw', type: 'number', direction: 'out' },
+      { id: 'roll', name: 'Roll', type: 'number', direction: 'out' },
+    ],
+  },
+
+  // Debug
+  PrintString: {
+    category: NODE_CATEGORIES.DEBUG,
+    inputs: [
+      { id: 'inString', name: 'In String', type: 'string', direction: 'in', defaultValue: 'Message' },
+      { id: 'printToScreen', name: 'Print To Screen', type: 'boolean', direction: 'in', defaultValue: true },
+      { id: 'printToLog', name: 'Print To Log', type: 'boolean', direction: 'in', defaultValue: true },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  PrintVector: {
+    category: NODE_CATEGORIES.DEBUG,
+    inputs: [
+      { id: 'inVector', name: 'In Vector', type: 'vector2', direction: 'in' },
+      { id: 'printToScreen', name: 'Print To Screen', type: 'boolean', direction: 'in', defaultValue: true },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  DrawDebugLine: {
+    category: NODE_CATEGORIES.DEBUG,
+    inputs: [
+      { id: 'lineStart', name: 'Line Start', type: 'vector2', direction: 'in' },
+      { id: 'lineEnd', name: 'Line End', type: 'vector2', direction: 'in' },
+      { id: 'color', name: 'Color', type: 'color', direction: 'in' },
+      { id: 'duration', name: 'Duration', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  DrawDebugCircle: {
+    category: NODE_CATEGORIES.DEBUG,
+    inputs: [
+      { id: 'center', name: 'Center', type: 'vector2', direction: 'in' },
+      { id: 'radius', name: 'Radius', type: 'number', direction: 'in', defaultValue: 100 },
+      { id: 'color', name: 'Color', type: 'color', direction: 'in' },
+      { id: 'segments', name: 'Segments', type: 'number', direction: 'in', defaultValue: 32 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // AI/Pathfinding (Stubs)
+  FindPathToLocation: {
+    category: NODE_CATEGORIES.AI,
+    inputs: [
+      { id: 'aiEntity', name: 'AI Entity', type: 'entityRef', direction: 'in' },
+      { id: 'targetLocation', name: 'Target Location', type: 'vector2', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'path', name: 'Path', type: 'array', direction: 'out' },
+      { id: 'pathFound', name: 'Path Found', type: 'boolean', direction: 'out' },
+    ],
+  },
+  MoveAlongPath: {
+    category: NODE_CATEGORIES.AI,
+    inputs: [
+      { id: 'aiEntity', name: 'AI Entity', type: 'entityRef', direction: 'in' },
+      { id: 'path', name: 'Path', type: 'array', direction: 'in' },
+      { id: 'speed', name: 'Speed', type: 'number', direction: 'in', defaultValue: 500 },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+  SetAIBehavior: {
+    category: NODE_CATEGORIES.AI,
+    inputs: [
+      { id: 'aiEntity', name: 'AI Entity', type: 'entityRef', direction: 'in' },
+      { id: 'behavior', name: 'Behavior', type: 'string', direction: 'in', defaultValue: 'Idle' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
 };
 
 // Grid and canvas constants

@@ -1436,6 +1436,486 @@ export class GraphExecutor {
       context.variables.set(`${node.id}_velocity`, velocity);
       return ['velocity'];
     });
+
+    // Flow Control - UE Inspired
+    this.registerExecutor('DoOnce', async (node, context, graph) => {
+      const counter = context.variables.get(`${node.id}_count`) || 0;
+      if ((counter as number) === 0) {
+        context.variables.set(`${node.id}_count`, 1);
+        return ['exec_out'];
+      }
+      return [];
+    });
+
+    this.registerExecutor('DoN', async (node, context, graph) => {
+      const n = await this.getPinValue(node, 'n', context, graph) as number;
+      const counter = (context.variables.get(`${node.id}_count`) || 0) as number;
+      if (counter < n) {
+        context.variables.set(`${node.id}_count`, counter + 1);
+        context.variables.set(`${node.id}_count`, counter);
+        return ['exec_out'];
+      }
+      return [];
+    });
+
+    this.registerExecutor('Gate', async (node, context, graph) => {
+      const isOpen = context.variables.get(`${node.id}_open`) || true;
+      if (isOpen) return ['exit'];
+      return [];
+    });
+
+    this.registerExecutor('Delay', async (node, context, graph) => {
+      const duration = await this.getPinValue(node, 'duration', context, graph) as number;
+      await new Promise(resolve => setTimeout(resolve, duration * 1000));
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('RetriggerableDelay', async (node, context, graph) => {
+      const duration = await this.getPinValue(node, 'duration', context, graph) as number;
+      await new Promise(resolve => setTimeout(resolve, duration * 1000));
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('FlipFlop', async (node, context, graph) => {
+      const state = context.variables.get(`${node.id}_state`) || false;
+      context.variables.set(`${node.id}_state`, !state);
+      return (state as boolean) ? ['b'] : ['a'];
+    });
+
+    this.registerExecutor('MultiGate', async (node, context, graph) => {
+      const index = await this.getPinValue(node, 'index', context, graph) as number;
+      const outputs = ['out0', 'out1', 'out2'];
+      return [outputs[Math.floor(index) % outputs.length]];
+    });
+
+    // Collision/Tracing
+    this.registerExecutor('LineTrace', async (node, context, graph) => {
+      const start = await this.getPinValue(node, 'start', context, graph) as any;
+      const end = await this.getPinValue(node, 'end', context, graph) as any;
+      // Stub: simple hit detection
+      const hit = Math.random() > 0.7;
+      context.variables.set(`${node.id}_hit`, hit);
+      context.variables.set(`${node.id}_hitLocation`, end);
+      context.variables.set(`${node.id}_impactNormal`, { x: 0, y: 1 });
+      context.variables.set(`${node.id}_hitActor`, hit ? 'hitActor' : null);
+      return ['hit', 'hitLocation', 'impactNormal', 'hitActor'];
+    });
+
+    this.registerExecutor('MultiLineTrace', async (node, context, graph) => {
+      context.variables.set(`${node.id}_hits`, []);
+      return ['hits'];
+    });
+
+    this.registerExecutor('SphereTrace', async (node, context, graph) => {
+      const radius = await this.getPinValue(node, 'radius', context, graph) as number;
+      const hit = radius > 0;
+      context.variables.set(`${node.id}_hit`, hit);
+      context.variables.set(`${node.id}_overlappingActors`, []);
+      return ['hit', 'overlappingActors'];
+    });
+
+    this.registerExecutor('BoxTrace', async (node, context, graph) => {
+      context.variables.set(`${node.id}_hit`, true);
+      context.variables.set(`${node.id}_overlappingActors`, []);
+      return ['hit', 'overlappingActors'];
+    });
+
+    this.registerExecutor('GetOverlappingActors', async (node, context, graph) => {
+      context.variables.set(`${node.id}_actors`, []);
+      return ['actors'];
+    });
+
+    // Actor Transforms
+    this.registerExecutor('GetActorBounds', async (node, context, graph) => {
+      context.variables.set(`${node.id}_origin`, { x: 0, y: 0 });
+      context.variables.set(`${node.id}_size`, { x: 100, y: 100 });
+      return ['origin', 'size'];
+    });
+
+    this.registerExecutor('GetActorLocation', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const location = context.variables.get(`entity_${entityId}_location`) || { x: 0, y: 0 };
+      context.variables.set(`${node.id}_location`, location);
+      return ['location'];
+    });
+
+    this.registerExecutor('SetActorLocation', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const location = await this.getPinValue(node, 'location', context, graph);
+      context.variables.set(`entity_${entityId}_location`, location);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('GetActorRotation', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const rotation = context.variables.get(`entity_${entityId}_rotation`) || 0;
+      context.variables.set(`${node.id}_rotation`, rotation);
+      return ['rotation'];
+    });
+
+    this.registerExecutor('SetActorRotation', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const rotation = await this.getPinValue(node, 'rotation', context, graph);
+      context.variables.set(`entity_${entityId}_rotation`, rotation);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('GetActorScale', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const scale = context.variables.get(`entity_${entityId}_scale`) || { x: 1, y: 1 };
+      context.variables.set(`${node.id}_scale`, scale);
+      return ['scale'];
+    });
+
+    this.registerExecutor('SetActorScale', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const scale = await this.getPinValue(node, 'scale', context, graph);
+      context.variables.set(`entity_${entityId}_scale`, scale);
+      return ['exec_out'];
+    });
+
+    // Spawning
+    this.registerExecutor('SpawnActor', async (node, context, graph) => {
+      const location = await this.getPinValue(node, 'location', context, graph);
+      const spawnedId = `spawned_${Date.now()}`;
+      context.variables.set(`entity_${spawnedId}_location`, location);
+      context.variables.set(`${node.id}_spawnedActor`, spawnedId);
+      return ['spawnedActor'];
+    });
+
+    this.registerExecutor('DestroyActor', async (node, context, graph) => {
+      // Stub: mark as destroyed
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('IsActorValid', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph);
+      context.variables.set(`${node.id}_valid`, entityId != null);
+      return ['valid'];
+    });
+
+    // Damage/Gameplay
+    this.registerExecutor('TakeDamage', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const damage = await this.getPinValue(node, 'damage', context, graph) as number;
+      const currentHealth = (context.variables.get(`entity_${entityId}_health`) || 100) as number;
+      const finalDamage = Math.max(0, damage);
+      context.variables.set(`entity_${entityId}_health`, Math.max(0, currentHealth - finalDamage));
+      context.variables.set(`${node.id}_finalDamage`, finalDamage);
+      return ['exec_out', 'finalDamage'];
+    });
+
+    this.registerExecutor('ApplyDamage', async (node, context, graph) => {
+      const damage = await this.getPinValue(node, 'baseDamage', context, graph) as number;
+      context.variables.set(`${node.id}_damageDealt`, damage);
+      return ['damageDealt'];
+    });
+
+    this.registerExecutor('GetHealth', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const health = context.variables.get(`entity_${entityId}_health`) || 100;
+      context.variables.set(`${node.id}_health`, health);
+      return ['health'];
+    });
+
+    this.registerExecutor('SetHealth', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const health = await this.getPinValue(node, 'health', context, graph);
+      context.variables.set(`entity_${entityId}_health`, health);
+      return ['exec_out'];
+    });
+
+    // Character/Movement
+    this.registerExecutor('GetCharacterVelocity', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const velocity = context.variables.get(`entity_${entityId}_velocity`) || { x: 0, y: 0 };
+      context.variables.set(`${node.id}_velocity`, velocity);
+      return ['velocity'];
+    });
+
+    this.registerExecutor('SetCharacterVelocity', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const velocity = await this.getPinValue(node, 'velocity', context, graph);
+      context.variables.set(`entity_${entityId}_velocity`, velocity);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('LaunchCharacter', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const launchVelocity = await this.getPinValue(node, 'launchVelocity', context, graph);
+      context.variables.set(`entity_${entityId}_velocity`, launchVelocity);
+      return ['exec_out'];
+    });
+
+    // Input
+    this.registerExecutor('InputAxis', async (node, context, graph) => {
+      const axisValue = Math.random() * 2 - 1;
+      context.variables.set(`${node.id}_axisValue`, axisValue);
+      return ['axisValue'];
+    });
+
+    this.registerExecutor('InputAction', async (node, context, graph) => {
+      return ['pressed'];
+    });
+
+    this.registerExecutor('InputKey', async (node, context, graph) => {
+      return ['pressed'];
+    });
+
+    this.registerExecutor('GetInputAxis', async (node, context, graph) => {
+      context.variables.set(`${node.id}_value`, Math.random() * 2 - 1);
+      return ['value'];
+    });
+
+    this.registerExecutor('IsInputKeyDown', async (node, context, graph) => {
+      context.variables.set(`${node.id}_isDown`, false);
+      return ['isDown'];
+    });
+
+    // Audio
+    this.registerExecutor('PlaySoundAtLocation', async (node, context, graph) => {
+      context.variables.set(`${node.id}_audioComponent`, `audio_${Date.now()}`);
+      return ['audioComponent'];
+    });
+
+    this.registerExecutor('PlaySoundAttached', async (node, context, graph) => {
+      context.variables.set(`${node.id}_audioComponent`, `audio_${Date.now()}`);
+      return ['audioComponent'];
+    });
+
+    this.registerExecutor('StopSound', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('IsSoundPlaying', async (node, context, graph) => {
+      context.variables.set(`${node.id}_isPlaying`, false);
+      return ['isPlaying'];
+    });
+
+    // Animation
+    this.registerExecutor('PlayAnimation', async (node, context, graph) => {
+      const entityId = await this.getPinValue(node, 'entityId', context, graph) as string;
+      const animation = await this.getPinValue(node, 'animation', context, graph);
+      context.variables.set(`entity_${entityId}_animation`, animation);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('StopAnimation', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('IsAnimationPlaying', async (node, context, graph) => {
+      context.variables.set(`${node.id}_isPlaying`, false);
+      return ['isPlaying'];
+    });
+
+    this.registerExecutor('GetAnimationLength', async (node, context, graph) => {
+      context.variables.set(`${node.id}_length`, 2.0);
+      return ['length'];
+    });
+
+    // Math Extended
+    this.registerExecutor('Clamp01', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph) as number;
+      context.variables.set(`${node.id}_result`, Math.max(0, Math.min(1, value)));
+      return ['result'];
+    });
+
+    this.registerExecutor('Clamp360', async (node, context, graph) => {
+      const angle = await this.getPinValue(node, 'angle', context, graph) as number;
+      const clamped = ((angle % 360) + 360) % 360;
+      context.variables.set(`${node.id}_result`, clamped);
+      return ['result'];
+    });
+
+    this.registerExecutor('MapRangeClamped', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph) as number;
+      const inMin = await this.getPinValue(node, 'inMin', context, graph) as number;
+      const inMax = await this.getPinValue(node, 'inMax', context, graph) as number;
+      const outMin = await this.getPinValue(node, 'outMin', context, graph) as number;
+      const outMax = await this.getPinValue(node, 'outMax', context, graph) as number;
+      const t = Math.max(0, Math.min(1, (value - inMin) / (inMax - inMin)));
+      const result = outMin + t * (outMax - outMin);
+      context.variables.set(`${node.id}_result`, result);
+      return ['result'];
+    });
+
+    this.registerExecutor('MapRangeUnclamped', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph) as number;
+      const inMin = await this.getPinValue(node, 'inMin', context, graph) as number;
+      const inMax = await this.getPinValue(node, 'inMax', context, graph) as number;
+      const outMin = await this.getPinValue(node, 'outMin', context, graph) as number;
+      const outMax = await this.getPinValue(node, 'outMax', context, graph) as number;
+      const t = (value - inMin) / (inMax - inMin);
+      const result = outMin + t * (outMax - outMin);
+      context.variables.set(`${node.id}_result`, result);
+      return ['result'];
+    });
+
+    this.registerExecutor('FInterpTo', async (node, context, graph) => {
+      const current = await this.getPinValue(node, 'current', context, graph) as number;
+      const target = await this.getPinValue(node, 'target', context, graph) as number;
+      const deltaTime = await this.getPinValue(node, 'deltaTime', context, graph) as number;
+      const interpSpeed = await this.getPinValue(node, 'interpSpeed', context, graph) as number;
+      const result = current + (target - current) * Math.min(1, interpSpeed * deltaTime);
+      context.variables.set(`${node.id}_result`, result);
+      return ['result'];
+    });
+
+    this.registerExecutor('VInterpTo', async (node, context, graph) => {
+      const current = await this.getPinValue(node, 'current', context, graph) as any;
+      const target = await this.getPinValue(node, 'target', context, graph) as any;
+      const deltaTime = await this.getPinValue(node, 'deltaTime', context, graph) as number;
+      const interpSpeed = await this.getPinValue(node, 'interpSpeed', context, graph) as number;
+      const t = Math.min(1, interpSpeed * deltaTime);
+      const result = {
+        x: (current?.x || 0) + ((target?.x || 0) - (current?.x || 0)) * t,
+        y: (current?.y || 0) + ((target?.y || 0) - (current?.y || 0)) * t,
+      };
+      context.variables.set(`${node.id}_result`, result);
+      return ['result'];
+    });
+
+    // String Extended
+    this.registerExecutor('StartsWithStr', async (node, context, graph) => {
+      const str = await this.getPinValue(node, 'string', context, graph) as string;
+      const prefix = await this.getPinValue(node, 'prefix', context, graph) as string;
+      context.variables.set(`${node.id}_result`, (str || '').startsWith(prefix || ''));
+      return ['result'];
+    });
+
+    this.registerExecutor('EndsWithStr', async (node, context, graph) => {
+      const str = await this.getPinValue(node, 'string', context, graph) as string;
+      const suffix = await this.getPinValue(node, 'suffix', context, graph) as string;
+      context.variables.set(`${node.id}_result`, (str || '').endsWith(suffix || ''));
+      return ['result'];
+    });
+
+    this.registerExecutor('RemoveFromString', async (node, context, graph) => {
+      const str = await this.getPinValue(node, 'string', context, graph) as string;
+      const toRemove = await this.getPinValue(node, 'toRemove', context, graph) as string;
+      const result = (str || '').replace(toRemove || '', '');
+      context.variables.set(`${node.id}_result`, result);
+      return ['result'];
+    });
+
+    this.registerExecutor('RemoveFromStart', async (node, context, graph) => {
+      const str = await this.getPinValue(node, 'string', context, graph) as string;
+      const count = Math.floor(await this.getPinValue(node, 'count', context, graph) as number);
+      const result = (str || '').slice(count);
+      context.variables.set(`${node.id}_result`, result);
+      return ['result'];
+    });
+
+    this.registerExecutor('RemoveFromEnd', async (node, context, graph) => {
+      const str = await this.getPinValue(node, 'string', context, graph) as string;
+      const count = Math.floor(await this.getPinValue(node, 'count', context, graph) as number);
+      const result = (str || '').slice(0, -(count || 0));
+      context.variables.set(`${node.id}_result`, result);
+      return ['result'];
+    });
+
+    // Casting/Conversion
+    this.registerExecutor('CastToInt', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph);
+      context.variables.set(`${node.id}_result`, Math.floor(Number(value) || 0));
+      return ['result'];
+    });
+
+    this.registerExecutor('CastToFloat', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph);
+      context.variables.set(`${node.id}_result`, Number(value) || 0);
+      return ['result'];
+    });
+
+    this.registerExecutor('CastToString', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph);
+      context.variables.set(`${node.id}_result`, String(value || ''));
+      return ['result'];
+    });
+
+    this.registerExecutor('CastToBool', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph);
+      context.variables.set(`${node.id}_result`, Boolean(value));
+      return ['result'];
+    });
+
+    this.registerExecutor('IsValid', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph);
+      context.variables.set(`${node.id}_valid`, value != null && value !== undefined);
+      return ['valid'];
+    });
+
+    // Data Structures
+    this.registerExecutor('MakeVector3', async (node, context, graph) => {
+      const x = await this.getPinValue(node, 'x', context, graph) as number;
+      const y = await this.getPinValue(node, 'y', context, graph) as number;
+      const z = await this.getPinValue(node, 'z', context, graph) as number;
+      context.variables.set(`${node.id}_result`, { x, y, z });
+      return ['result'];
+    });
+
+    this.registerExecutor('BreakVector3', async (node, context, graph) => {
+      const vector = await this.getPinValue(node, 'vector', context, graph) as any;
+      context.variables.set(`${node.id}_x`, vector?.x || 0);
+      context.variables.set(`${node.id}_y`, vector?.y || 0);
+      context.variables.set(`${node.id}_z`, vector?.z || 0);
+      return ['x', 'y', 'z'];
+    });
+
+    this.registerExecutor('MakeRotator', async (node, context, graph) => {
+      const pitch = await this.getPinValue(node, 'pitch', context, graph) as number;
+      const yaw = await this.getPinValue(node, 'yaw', context, graph) as number;
+      const roll = await this.getPinValue(node, 'roll', context, graph) as number;
+      context.variables.set(`${node.id}_result`, { pitch, yaw, roll });
+      return ['result'];
+    });
+
+    this.registerExecutor('BreakRotator', async (node, context, graph) => {
+      const rotator = await this.getPinValue(node, 'rotator', context, graph) as any;
+      context.variables.set(`${node.id}_pitch`, rotator?.pitch || 0);
+      context.variables.set(`${node.id}_yaw`, rotator?.yaw || 0);
+      context.variables.set(`${node.id}_roll`, rotator?.roll || 0);
+      return ['pitch', 'yaw', 'roll'];
+    });
+
+    // Debug
+    this.registerExecutor('PrintString', async (node, context, graph) => {
+      const str = await this.getPinValue(node, 'inString', context, graph) as string;
+      console.log(`[Print] ${str}`);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('PrintVector', async (node, context, graph) => {
+      const vector = await this.getPinValue(node, 'inVector', context, graph) as any;
+      console.log(`[Vector] x=${vector?.x}, y=${vector?.y}`);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('DrawDebugLine', async (node, context, graph) => {
+      // Stub: visual rendering would happen in game viewport
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('DrawDebugCircle', async (node, context, graph) => {
+      // Stub: visual rendering would happen in game viewport
+      return ['exec_out'];
+    });
+
+    // AI/Pathfinding
+    this.registerExecutor('FindPathToLocation', async (node, context, graph) => {
+      context.variables.set(`${node.id}_path`, []);
+      context.variables.set(`${node.id}_pathFound`, false);
+      return ['path', 'pathFound'];
+    });
+
+    this.registerExecutor('MoveAlongPath', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('SetAIBehavior', async (node, context, graph) => {
+      return ['exec_out'];
+    });
   }
 
   registerExecutor(nodeType: string, executor: NodeExecutor): void {
