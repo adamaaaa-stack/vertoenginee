@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, forwardRef } from 'react'
-import { Project, Graph } from '../core/types'
-import { GraphViewport } from '../editor/viewport'
+import { Project, Graph, Node } from '../core/types'
+import { GraphViewport, HitTestResult } from '../editor/viewport'
 import './nodeEditor.css'
 
 interface NodeEditorProps {
@@ -11,175 +11,229 @@ interface NodeEditorProps {
   onConnectNodes: (fromNodeId: string, fromPinId: string, toNodeId: string, toPinId: string) => void
 }
 
-interface TouchState {
+interface DragState {
+  nodeId?: string
+  pinId?: string
   startX: number
   startY: number
-  startDist: number
   isDragging: boolean
-  isPinching: boolean
 }
 
 const NodeEditor = forwardRef<any, NodeEditorProps>(
   ({ project, activeGraphId, onAddNode, onDeleteNode, onConnectNodes }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const viewportRef = useRef<GraphViewport | null>(null)
-    const touchStateRef = useRef<TouchState>({
+    const dragStateRef = useRef<DragState>({
       startX: 0,
       startY: 0,
-      startDist: 0,
       isDragging: false,
-      isPinching: false,
     })
     const [graph, setGraph] = useState<Graph | null>(null)
+    const [connectionStart, setConnectionStart] = useState<{
+      nodeId: string
+      pinId: string
+      pinDirection: 'in' | 'out'
+    } | null>(null)
 
-    // Initialize canvas and viewport
+    // Get active graph
     useEffect(() => {
-      if (!canvasRef.current) return
-
-      viewportRef.current = new GraphViewport(canvasRef.current)
-
-      // Get active graph
       const activeGraph = project.graphs.find(g => g.id === activeGraphId)
       setGraph(activeGraph || null)
     }, [project, activeGraphId])
 
-    // Render loop
+    // Initialize canvas and viewport
     useEffect(() => {
-      if (!viewportRef.current || !graph) return
-
-      const render = () => {
-        viewportRef.current!.render(graph)
-      }
-
-      const animationId = requestAnimationFrame(render)
-      return () => cancelAnimationFrame(animationId)
+      if (!canvasRef.current || !graph) return
+      viewportRef.current = new GraphViewport(canvasRef.current)
     }, [graph])
 
-    // Handle touch/mouse events
-    const handleMouseDown = (e: React.MouseEvent) => {
-      if (!canvasRef.current || !viewportRef.current) return
+    // Render loop
+    useEffect(() => {
+      if (!viewportRef.current || !graph || !canvasRef.current) return
+
+      let animationId: number
+      const render = () => {
+        viewportRef.current!.render(graph)
+        if (connectionStart) {
+          // Draw connection preview
+          drawConnectionPreview()
+        }
+        animationId = requestAnimationFrame(render)
+      }
+
+      animationId = requestAnimationFrame(render)
+      return () => cancelAnimationFrame(animationId)
+    }, [graph, connectionStart])
+
+    const drawConnectionPreview = () => {
+      if (!canvasRef.current || !connectionStart || !viewportRef.current) return
+
+      const ctx = canvasRef.current.getContext('2d')
+      if (!ctx) return
+
+      const fromNode = graph?.nodes.find(n => n.id === connectionStart.nodeId)
+      if (!fromNode) return
+
+      const fromScreen = viewportRef.current.worldToScreen(
+        fromNode.position.x,
+        fromNode.position.y
+      )
+
+      ctx.strokeStyle = '#ffcc00'
+      ctx.lineWidth = 2
+      ctx.setLineDash([5, 5])
+      ctx.beginPath()
+      ctx.moveTo(
+        fromScreen.x + fromNode.size.width * viewportRef.current.getViewport().zoomLevel,
+        fromScreen.y + 40 * viewportRef.current.getViewport().zoomLevel
+      )
+      ctx.lineTo(
+        canvasRef.current.width / (window.devicePixelRatio || 1),
+        canvasRef.current.height / (window.devicePixelRatio || 1)
+      )
+      ctx.stroke()
+      ctx.setLineDash([])
+    }
+
+    const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!canvasRef.current || !viewportRef.current || !graph) return
 
       const rect = canvasRef.current.getBoundingClientRect()
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
 
-      touchStateRef.current = {
+      dragStateRef.current = {
         startX: x,
         startY: y,
-        startDist: 0,
         isDragging: true,
-        isPinching: false,
       }
 
       if (e.button === 0) {
-        // Left click - select/connect
-        if (graph) {
-          const hitResult = viewportRef.current.hitTest(x, y, graph)
-          if (hitResult.type === 'node') {
-            viewportRef.current.selectNode(hitResult.nodeId!, e.ctrlKey || e.metaKey)
-          } else if (hitResult.type === 'canvas') {
-            viewportRef.current.clearSelection()
-          }
+        const hitResult = viewportRef.current.hitTest(x, y, graph)
+
+        if (hitResult.type === 'pin') {
+          // Start connection
+          setConnectionStart({
+            nodeId: hitResult.nodeId!,
+            pinId: hitResult.pinId!,
+            pinDirection: hitResult.pinDirection!,
+          })
+        } else if (hitResult.type === 'node') {
+          // Select node
+          dragStateRef.current.nodeId = hitResult.nodeId
+          viewportRef.current.selectNode(hitResult.nodeId!, e.ctrlKey || e.metaKey)
+        } else {
+          // Deselect
+          viewportRef.current.clearSelection()
         }
-      } else if (e.button === 2) {
-        // Right click - context menu
-        e.preventDefault()
       }
     }
 
-    const handleMouseMove = (e: React.MouseEvent) => {
+    const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
       if (!canvasRef.current || !viewportRef.current) return
 
       const rect = canvasRef.current.getBoundingClientRect()
       const x = e.clientX - rect.left
       const y = e.clientY - rect.top
 
-      if (touchStateRef.current.isDragging && !touchStateRef.current.isPinching) {
-        const deltaX = x - touchStateRef.current.startX
-        const deltaY = y - touchStateRef.current.startY
+      if (!dragStateRef.current.isDragging) return
 
-        viewportRef.current.pan(deltaX, deltaY)
+      const deltaX = x - dragStateRef.current.startX
+      const deltaY = y - dragStateRef.current.startY
 
-        touchStateRef.current.startX = x
-        touchStateRef.current.startY = y
+      if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+        if (dragStateRef.current.nodeId && graph && !connectionStart) {
+          // Dragging node
+          const node = graph.nodes.find(n => n.id === dragStateRef.current.nodeId)
+          if (node) {
+            node.position.x += deltaX / viewportRef.current.getViewport().zoomLevel
+            node.position.y += deltaY / viewportRef.current.getViewport().zoomLevel
+            dragStateRef.current.startX = x
+            dragStateRef.current.startY = y
+            setGraph({ ...graph })
+          }
+        } else if (!dragStateRef.current.nodeId && !connectionStart) {
+          // Panning
+          viewportRef.current.pan(deltaX, deltaY)
+          dragStateRef.current.startX = x
+          dragStateRef.current.startY = y
+        }
       }
     }
 
-    const handleMouseUp = () => {
-      touchStateRef.current.isDragging = false
+    const handleMouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
+      if (!canvasRef.current || !viewportRef.current || !graph) return
+
+      const rect = canvasRef.current.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+
+      if (connectionStart) {
+        // Check if we're hovering over a pin
+        const hitResult = viewportRef.current.hitTest(x, y, graph)
+        if (hitResult.type === 'pin' && hitResult.pinDirection === 'in') {
+          // Check compatibility
+          const fromNode = graph.nodes.find(n => n.id === connectionStart.nodeId)
+          const toNode = graph.nodes.find(n => n.id === hitResult.nodeId)
+          if (fromNode && toNode) {
+            const fromPin = fromNode.outputs.find(p => p.id === connectionStart.pinId)
+            const toPin = toNode.inputs.find(p => p.id === hitResult.pinId)
+            if (fromPin && toPin) {
+              onConnectNodes(
+                connectionStart.nodeId,
+                connectionStart.pinId,
+                hitResult.nodeId!,
+                hitResult.pinId!
+              )
+            }
+          }
+        }
+        setConnectionStart(null)
+      }
+
+      dragStateRef.current.isDragging = false
+      dragStateRef.current.nodeId = undefined
     }
 
-    const handleWheel = (e: React.WheelEvent) => {
+    const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
       if (!viewportRef.current) return
       e.preventDefault()
 
+      const rect = canvasRef.current!.getBoundingClientRect()
       const zoomDelta = e.deltaY > 0 ? -0.1 : 0.1
-      viewportRef.current.zoom(zoomDelta, e.clientX, e.clientY)
+      viewportRef.current.zoom(zoomDelta, e.clientX - rect.left, e.clientY - rect.top)
     }
 
-    const handleTouchStart = (e: React.TouchEvent) => {
-      if (!canvasRef.current) return
-
-      if (e.touches.length === 1) {
-        const touch = e.touches[0]
-        const rect = canvasRef.current.getBoundingClientRect()
-        touchStateRef.current = {
-          startX: touch.clientX - rect.left,
-          startY: touch.clientY - rect.top,
-          startDist: 0,
-          isDragging: true,
-          isPinching: false,
-        }
-      } else if (e.touches.length === 2) {
-        const dx = e.touches[1].clientX - e.touches[0].clientX
-        const dy = e.touches[1].clientY - e.touches[0].clientY
-        touchStateRef.current = {
-          startX: (e.touches[0].clientX + e.touches[1].clientX) / 2,
-          startY: (e.touches[0].clientY + e.touches[1].clientY) / 2,
-          startDist: Math.sqrt(dx * dx + dy * dy),
-          isDragging: false,
-          isPinching: true,
-        }
-      }
-    }
-
-    const handleTouchMove = (e: React.TouchEvent) => {
-      if (!canvasRef.current || !viewportRef.current) return
-
-      const rect = canvasRef.current.getBoundingClientRect()
-
-      if (e.touches.length === 1 && touchStateRef.current.isDragging) {
-        const touch = e.touches[0]
-        const x = touch.clientX - rect.left
-        const y = touch.clientY - rect.top
-
-        const deltaX = x - touchStateRef.current.startX
-        const deltaY = y - touchStateRef.current.startY
-
-        viewportRef.current.pan(deltaX, deltaY)
-
-        touchStateRef.current.startX = x
-        touchStateRef.current.startY = y
-      } else if (e.touches.length === 2 && touchStateRef.current.isPinching) {
-        const dx = e.touches[1].clientX - e.touches[0].clientX
-        const dy = e.touches[1].clientY - e.touches[0].clientY
-        const dist = Math.sqrt(dx * dx + dy * dy)
-
-        const zoomDelta = (dist - touchStateRef.current.startDist) * 0.01
-        viewportRef.current.zoom(zoomDelta)
-
-        touchStateRef.current.startDist = dist
-      }
-    }
-
-    const handleTouchEnd = () => {
-      touchStateRef.current.isDragging = false
-      touchStateRef.current.isPinching = false
-    }
-
-    const handleContextMenu = (e: React.MouseEvent) => {
+    const handleDragOver = (e: React.DragEvent<HTMLCanvasElement>) => {
       e.preventDefault()
-      // Show context menu
+      e.dataTransfer.dropEffect = 'copy'
+    }
+
+    const handleDrop = (e: React.DragEvent<HTMLCanvasElement>) => {
+      e.preventDefault()
+      const nodeType = e.dataTransfer.getData('nodeType')
+      if (!nodeType) return
+
+      const rect = canvasRef.current!.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+
+      if (viewportRef.current) {
+        const worldCoords = viewportRef.current.screenToWorld(x, y)
+        onAddNode(nodeType, worldCoords.x, worldCoords.y)
+      }
+    }
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLCanvasElement>) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        const selectedNode = graph?.nodes.find(n => viewportRef.current?.isNodeSelected(n.id))
+        if (selectedNode) {
+          onDeleteNode(selectedNode.id)
+        }
+      } else if (e.key === 'Escape') {
+        setConnectionStart(null)
+        viewportRef.current?.clearSelection()
+      }
     }
 
     return (
@@ -191,10 +245,10 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
         onWheel={handleWheel}
-        onContextMenu={handleContextMenu}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
       />
     )
   }
