@@ -136,6 +136,76 @@ export class GraphExecutor {
     this.registerExecutor('OnKeyDown', async (node, context, graph) => {
       return ['exec_out'];
     });
+
+    this.registerExecutor('OnKeyUp', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('OnCollisionEnter', async (node, context, graph) => {
+      return ['exec_out'];
+    });
+
+    // Logic
+    this.registerExecutor('Not', async (node, context, graph) => {
+      const value = await this.getPinValue(node, 'value', context, graph) as boolean;
+      context.variables.set(`${node.id}_result`, !value);
+      return ['result'];
+    });
+
+    this.registerExecutor('And', async (node, context, graph) => {
+      const a = await this.getPinValue(node, 'a', context, graph) as boolean;
+      const b = await this.getPinValue(node, 'b', context, graph) as boolean;
+      context.variables.set(`${node.id}_result`, a && b);
+      return ['result'];
+    });
+
+    this.registerExecutor('Or', async (node, context, graph) => {
+      const a = await this.getPinValue(node, 'a', context, graph) as boolean;
+      const b = await this.getPinValue(node, 'b', context, graph) as boolean;
+      context.variables.set(`${node.id}_result`, a || b);
+      return ['result'];
+    });
+
+    this.registerExecutor('Equal', async (node, context, graph) => {
+      const a = await this.getPinValue(node, 'a', context, graph);
+      const b = await this.getPinValue(node, 'b', context, graph);
+      context.variables.set(`${node.id}_result`, a === b);
+      return ['result'];
+    });
+
+    this.registerExecutor('NotEqual', async (node, context, graph) => {
+      const a = await this.getPinValue(node, 'a', context, graph);
+      const b = await this.getPinValue(node, 'b', context, graph);
+      context.variables.set(`${node.id}_result`, a !== b);
+      return ['result'];
+    });
+
+    this.registerExecutor('Greater', async (node, context, graph) => {
+      const a = await this.getPinValue(node, 'a', context, graph) as number;
+      const b = await this.getPinValue(node, 'b', context, graph) as number;
+      context.variables.set(`${node.id}_result`, a > b);
+      return ['result'];
+    });
+
+    this.registerExecutor('Less', async (node, context, graph) => {
+      const a = await this.getPinValue(node, 'a', context, graph) as number;
+      const b = await this.getPinValue(node, 'b', context, graph) as number;
+      context.variables.set(`${node.id}_result`, a < b);
+      return ['result'];
+    });
+
+    // Debug
+    this.registerExecutor('Print', async (node, context, graph) => {
+      const prefix = node.properties['prefix'] as string || 'Log:';
+      const value = await this.getPinValue(node, 'value', context, graph);
+      console.log(prefix, value);
+      return ['exec_out'];
+    });
+
+    this.registerExecutor('Assert', async (node, context, graph) => {
+      const condition = await this.getPinValue(node, 'condition', context, graph) as boolean;
+      return condition ? ['true_out'] : ['false_out'];
+    });
   }
 
   registerExecutor(nodeType: string, executor: NodeExecutor): void {

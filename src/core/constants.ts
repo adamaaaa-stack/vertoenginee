@@ -67,6 +67,22 @@ export const NODE_DEFINITIONS: Record<
       { id: 'key', name: 'Key', type: 'string', direction: 'out' },
     ],
   },
+  OnKeyUp: {
+    category: NODE_CATEGORIES.EVENTS,
+    inputs: [],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'key', name: 'Key', type: 'string', direction: 'out' },
+    ],
+  },
+  OnCollisionEnter: {
+    category: NODE_CATEGORIES.EVENTS,
+    inputs: [],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+      { id: 'other', name: 'Other Entity', type: 'entityRef', direction: 'out' },
+    ],
+  },
   CustomEvent: {
     category: NODE_CATEGORIES.EVENTS,
     inputs: [
@@ -302,6 +318,103 @@ export const NODE_DEFINITIONS: Record<
     ],
     outputs: [
       { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+  },
+
+  // Logic
+  Not: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'value', name: 'Value', type: 'boolean', direction: 'in', defaultValue: false },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  And: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'boolean', direction: 'in', defaultValue: false },
+      { id: 'b', name: 'B', type: 'boolean', direction: 'in', defaultValue: false },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  Or: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'boolean', direction: 'in', defaultValue: false },
+      { id: 'b', name: 'B', type: 'boolean', direction: 'in', defaultValue: false },
+    ],
+    outputs: [
+      { id: 'result', name: 'Result', type: 'boolean', direction: 'out' },
+    ],
+  },
+  Equal: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'any', direction: 'in' },
+      { id: 'b', name: 'B', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Equal', type: 'boolean', direction: 'out' },
+    ],
+  },
+  NotEqual: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'any', direction: 'in' },
+      { id: 'b', name: 'B', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'result', name: 'Not Equal', type: 'boolean', direction: 'out' },
+    ],
+  },
+  Greater: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'A > B', type: 'boolean', direction: 'out' },
+    ],
+  },
+  Less: {
+    category: NODE_CATEGORIES.LOGIC,
+    inputs: [
+      { id: 'a', name: 'A', type: 'number', direction: 'in', defaultValue: 0 },
+      { id: 'b', name: 'B', type: 'number', direction: 'in', defaultValue: 0 },
+    ],
+    outputs: [
+      { id: 'result', name: 'A < B', type: 'boolean', direction: 'out' },
+    ],
+  },
+
+  // Debug
+  Print: {
+    category: 'Debug',
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'value', name: 'Value', type: 'any', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'exec_out', name: 'Out', type: 'exec', direction: 'out' },
+    ],
+    properties: {
+      prefix: { type: 'string', default: 'Log:' },
+    },
+  },
+  Assert: {
+    category: 'Debug',
+    inputs: [
+      { id: 'exec_in', name: 'In', type: 'exec', direction: 'in' },
+      { id: 'condition', name: 'Condition', type: 'boolean', direction: 'in' },
+    ],
+    outputs: [
+      { id: 'true_out', name: 'True', type: 'exec', direction: 'out' },
+      { id: 'false_out', name: 'False', type: 'exec', direction: 'out' },
     ],
   },
 };
