@@ -35,6 +35,59 @@ const NodeEditor = forwardRef<any, NodeEditorProps>(
       pinDirection: 'in' | 'out'
     } | null>(null)
 
+    // Expose viewport methods to parent
+    React.useImperativeHandle(ref, () => ({
+      getViewport: () => viewportRef.current?.getViewport(),
+      zoom: (zoomDelta: number, centerX?: number, centerY?: number) => {
+        if (!canvasRef.current || !viewportRef.current) return
+        const rect = canvasRef.current.getBoundingClientRect()
+        const x = centerX ?? rect.width / 2
+        const y = centerY ?? rect.height / 2
+        viewportRef.current.zoom(zoomDelta, x, y)
+      },
+      resetZoom: () => {
+        if (!viewportRef.current) return
+        viewportRef.current.setViewport({ zoomLevel: 1, offsetX: 0, offsetY: 0 })
+      },
+      fitToView: (minX: number, minY: number, maxX: number, maxY: number) => {
+        if (!canvasRef.current || !viewportRef.current) return
+        const canvas = canvasRef.current
+        const padding = 50
+        const boundsWidth = maxX - minX + padding * 2
+        const boundsHeight = maxY - minY + padding * 2
+
+        const scaleX = (canvas.width / (window.devicePixelRatio || 1)) / boundsWidth
+        const scaleY = (canvas.height / (window.devicePixelRatio || 1)) / boundsHeight
+        const scale = Math.min(scaleX, scaleY, 1)
+
+        viewportRef.current.setViewport({
+          zoomLevel: scale,
+          offsetX: (canvas.width / (window.devicePixelRatio || 1)) / 2 - (minX + (maxX - minX) / 2) * scale,
+          offsetY: (canvas.height / (window.devicePixelRatio || 1)) / 2 - (minY + (maxY - minY) / 2) * scale,
+        })
+      },
+      pan: (deltaX: number, deltaY: number) => {
+        if (!viewportRef.current) return
+        viewportRef.current.pan(deltaX, deltaY)
+      },
+      toggleGrid: () => {
+        if (!viewportRef.current) return
+        const current = viewportRef.current.getViewport()
+        viewportRef.current.setViewport({ showGrid: !current.showGrid })
+      },
+      setViewportCenter: (x: number, y: number) => {
+        if (!canvasRef.current || !viewportRef.current) return
+        const canvas = canvasRef.current
+        const viewport = viewportRef.current.getViewport()
+        const centerOffsetX = (canvas.width / (window.devicePixelRatio || 1)) / 2
+        const centerOffsetY = (canvas.height / (window.devicePixelRatio || 1)) / 2
+        viewportRef.current.setViewport({
+          offsetX: centerOffsetX - x * viewport.zoomLevel,
+          offsetY: centerOffsetY - y * viewport.zoomLevel,
+        })
+      },
+    }), [canvasRef, viewportRef])
+
     // Get active graph
     useEffect(() => {
       const activeGraph = project.graphs.find(g => g.id === activeGraphId)

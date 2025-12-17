@@ -4,7 +4,7 @@ import { createDefaultProject, saveProjectToLocalStorage } from '../utils/serial
 import { createNode, createConnection, GraphManager } from '../graph/graph'
 import { GraphExecutor } from '../runtime/executor'
 import Toolbar from './toolbar'
-import NodeEditor from './nodeEditor'
+import NodeViewport from './nodeViewport'
 import NodePalette from './nodePalette'
 import AssetManager from './assetManager'
 import Console from './console'
@@ -171,7 +171,7 @@ export default function App() {
           <NodePalette onAddNode={handleAddNode} />
         </div>
         <div className="center-area">
-          <NodeEditor
+          <NodeViewport
             ref={nodeEditorRef}
             project={project}
             activeGraphId={activeGraphId}
